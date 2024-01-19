@@ -10,7 +10,7 @@
 
         <div class="title m-b-md">
 
-          <h1>Bienvenido a Pizas Norte</h1>
+          <h1>Pagina Root del Folder LaraNinja</h1>
 
           <br>
 

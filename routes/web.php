@@ -11,9 +11,15 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
 */
 
-Route::get('/', 'App\Http\Controllers\PizzaController@map');
+Route::get('/', 'App\Http\Controllers\MapController@map');
+Route::post('/', 'App\Http\Controllers\MapController@storeMap');
 Route::get('/pizzas', 'App\Http\Controllers\PizzaController@index');
 Route::get('/pizzas/create', 'App\Http\Controllers\PizzaController@create');
 Route::post('/pizzas', 'App\Http\Controllers\PizzaController@store');

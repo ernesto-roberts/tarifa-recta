@@ -5,14 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pizza;
 
+
 class PizzaController extends Controller
 {
-    public function map() {
 
-
-        return view('pizzas.map');
-
-    }
 
 
     public function index() {
@@ -22,6 +18,7 @@ class PizzaController extends Controller
         return view('pizzas.index', ['pizzas' => $pizzas ]);
 
     }
+
 
 
     public function show($id) {

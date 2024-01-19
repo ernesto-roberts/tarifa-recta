@@ -13,11 +13,14 @@
         body {
             margin: 0;
             padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 80%;
         }
 
         #map {
             width: 100%;
             height: 100vh;
+
         }
 
         .coordinate {
@@ -28,7 +31,7 @@
 
         #banner {
             width: 100%;
-            height: 10vh;
+            height: 9vh;
             border: solid;
             border-width: 4px;
             border-style: double;
@@ -41,41 +44,36 @@
 
         .flex-container > div {
 
-           margin: 20px;
-
+           margin: 4px;
+           padding: 3px;
+           border: solid;
+           font-weight: bold;
+           background-color: greenyellow;
         } 
+
+        #distancia {
+            display: none;
+        }
+
+
+
+        #distance {
+           text-align: center;
+        }
+
+        #formContainer {
+           width: 28vw;
+        }
+
+
     </style>
 </head>
 
 <body>
 
-    <div id="banner">
 
-        <div class="flex-container">
-            <div id="left">
-                <div id="latitude.a"></div><br>
-                <div id="longitude.a"></div>
-             </div>
-        
-             <div id="right">
-                <div id="latitude.b"></div><br>
-                <div id="longitude.b"></div>
-             </div>
-        
-             <div id="distance">
-                <p></p>
-                <p></p>
-                <p></p>            
-
-             </div>            
-        </div>
-
-
-
-    </div>
 
     @yield('content')
-
 </body>
 
 </html>
@@ -88,23 +86,22 @@
 <script>
 
     // Map initialization 
-    var map = L.map('map').setView([-34.609179, -58.446373], 12);
+    var map = L.map('map').setView([-34.63, -58.46], 12);
     
     map.options.minZoom = 12;
     map.options.maxZoom = 16;
 
-    //map.dragging.disable();
-
-    /*==============================================
-                TILE LAYER and WMS
-    ================================================*/
-    //osm layer
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         draggable: 'false',
     });
     osm.addTo(map);
-    // map.addLayer(osm)
+
+    var bounds = L.latLngBounds([[-34.5, -58.67], [-34.72, -58.30]]);
+    map.setMaxBounds(bounds);
+    map.on('drag', function() {map.panInsideBounds(bounds, { animate: false }); });
+
+
 
    
     // marcadores iniciales
@@ -119,9 +116,15 @@
         draggable: 'true',
         opacity: .7,
     }).addTo(map);
-    
+
 
     document.getElementById('distance').innerHTML = 'Distancia en Km: ' + 8.2;
+
+
+     document.getElementById('longitude.a').innerText = markA.getLatLng().lng.toFixed(3);    
+     document.getElementById('latitude.a').innerText = markA.getLatLng().lat.toFixed(3);
+     document.getElementById('latitude.b').innerText = markB.getLatLng().lat.toFixed(3);
+     document.getElementById('longitude.b').innerText = markB.getLatLng().lng.toFixed(3);
 
     //Polilines
 
@@ -129,12 +132,26 @@
   let active_polyline = L.featureGroup().addTo(map); 
 
 
-  function printDist()  {
+  function inputs()  {
      
      let length = map.distance([markA.getLatLng().lat, markA.getLatLng().lng], 
-                                 [markB.getLatLng().lat, markB.getLatLng().lng]);
-     let printLng = parseFloat(length / 1000).toFixed(1)
-     document.getElementById('distance').innerHTML = 'Distancia en Km: ' + printLng;        
+                               [markB.getLatLng().lat, markB.getLatLng().lng] );
+     let printLng = parseFloat(length / 1000).toFixed(3)
+
+     document.getElementById('distance').innerHTML = 'Distancia en Km: ' + printLng;
+
+     let fleteValue = parseFloat(3.2 * (length / 10)).toFixed(0);
+     let biciValue = parseFloat(1.1 * (length / 10)).toFixed(0);
+
+     document.getElementById('fletePrint').innerHTML = fleteValue;
+     document.getElementById('flete').value = fleteValue;
+
+     document.getElementById('biciPrint').innerHTML = biciValue;
+     document.getElementById('bici').value = biciValue;
+
+     document.getElementById('distancia').value =  printLng;
+
+
 
   }
 
@@ -144,11 +161,11 @@
                                  [markB.getLatLng().lat, markB.getLatLng().lng]], {
                                     color: 'red'
                      }).addTo(map).addTo(active_polyline);
-
+                     
   } 
 
     map.on('load', polyline());
-               
+    map.on('load', inputs());
 
     markA.on('mousemove dragend', function (e) {
 
@@ -156,10 +173,10 @@
 
         polyline();
         
-        document.getElementById('latitude.a').innerText = markA.getLatLng().lat;
-        document.getElementById('longitude.a').innerText = markA.getLatLng().lng;
+        document.getElementById('latitude.a').innerText = markA.getLatLng().lat.toFixed(3);;
+        document.getElementById('longitude.a').innerText = markA.getLatLng().lng.toFixed(3);;
 
-        printDist();
+        inputs();
 
     });
 
@@ -170,13 +187,27 @@
         
         polyline();
 
-        document.getElementById('latitude.b').innerText = markB.getLatLng().lat;
-        document.getElementById('longitude.b').innerText = markB.getLatLng().lng;
+        document.getElementById('latitude.b').innerText = markB.getLatLng().lat.toFixed(3);;
+        document.getElementById('longitude.b').innerText = markB.getLatLng().lng.toFixed(3);;
         
-        printDist();
+        inputs();
 
     });
 
 
 
-</script>   
+
+/*    const radioButtons = document.querySelectorAll('input[name="costo"]');
+
+     for (const radioButton of radioButtons) {
+           if (radioButton.checked) {
+               document.getElementById('tipo').value = radioButton.id;
+               break;
+           }
+       }                           */
+
+</script>
+
+
+
+
